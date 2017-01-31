@@ -1,0 +1,29 @@
+version: "2.0"
+
+services:
+  elasticsearch:
+    image: elasticsearch:alpine
+    volumes:
+      - './esdata:/usr/share/elasticsearch/data'
+    environment:
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - node.name="ELNODE"
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+
+  kibana:
+    image: kibana:latest
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - '5601:5601'
+
+  logstash:
+    image: logstash:alpine
+    entrypoint: logstash -f /etc/logstash/conf.d/logstash.conf 
+    ports:
+      - '5044:5044'
+    volumes:
+      - './logstash/config/:/etc/logstash/conf.d'
+
